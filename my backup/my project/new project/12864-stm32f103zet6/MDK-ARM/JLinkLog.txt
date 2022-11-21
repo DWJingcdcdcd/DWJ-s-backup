@@ -1,0 +1,124 @@
+T4CAC 000:181.265   SEGGER J-Link V6.54c Log File
+T4CAC 000:183.645   DLL Compiled: Nov  7 2019 17:01:02
+T4CAC 000:183.653   Logging started @ 2022-11-09 07:21
+T4CAC 000:183.668 JLINK_SetWarnOutHandler(...)
+T4CAC 000:184.195 - 0.532ms
+T4CAC 000:184.715 JLINK_OpenEx(...)
+T4CAC 000:194.604   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T4CAC 000:217.349   Hardware: V9.70
+T4CAC 000:217.384   S/N: 59768867
+T4CAC 000:217.395   OEM: SEGGER
+T4CAC 000:217.405   Feature(s): RDI, GDB, FlashDL, FlashBP, JFlash
+T4CAC 000:222.119   TELNET listener socket opened on port 19021
+T4CAC 000:242.692   WEBSRV Starting webserver
+T4CAC 000:242.967   WEBSRV Webserver running on local port 19080
+T4CAC 000:242.979 - 58.268ms returns "O.K."
+T4CAC 000:243.001 JLINK_GetEmuCaps()
+T4CAC 000:243.252 - 0.254ms returns 0xB9FF7BBF
+T4CAC 000:243.519 JLINK_TIF_GetAvailable(...)
+T4CAC 000:244.001 - 0.497ms
+T4CAC 000:244.033 JLINK_SetErrorOutHandler(...)
+T4CAC 000:244.044 - 0.014ms
+T4CAC 000:244.343 JLINK_ExecCommand("ProjectFile = "D:\STM32CubeMX\new project\12864\MDK-ARM\JLinkSettings.ini"", ...). 
+T4CAC 000:263.737   Ref file found at: C:\Keil_v5\ARM\Segger\JLinkDevices.ref
+T4CAC 000:270.650   XML referenced by ref file: C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml
+T4CAC 000:272.798   C:\Program Files (x86)\SEGGER\JLink\JLinkDevices.xml evaluated successfully.
+T4CAC 000:401.891 - 157.565ms returns 0x00
+T4CAC 000:401.922 JLINK_ExecCommand("Device = STM32F103ZE", ...). 
+T4CAC 000:404.858   Device "STM32F103ZE" selected.
+T4CAC 000:405.193 - 3.267ms returns 0x00
+T4CAC 000:405.207 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T4CAC 000:405.244 - 0.006ms returns 0x01
+T4CAC 000:405.302 JLINK_GetHardwareVersion()
+T4CAC 000:405.311 - 0.011ms returns 0x17AE8
+T4CAC 000:405.323 JLINK_GetDLLVersion()  returns 65403
+T4CAC 000:405.335 JLINK_GetFirmwareString(...)
+T4CAC 000:405.355 - 0.022ms
+T4CAC 000:405.382 JLINK_GetDLLVersion()  returns 65403
+T4CAC 000:405.404 JLINK_GetCompileDateTime()
+T4CAC 000:405.409 - 0.008ms
+T4CAC 000:405.418 JLINK_GetFirmwareString(...)
+T4CAC 000:405.423 - 0.007ms
+T4CAC 000:405.431 JLINK_GetHardwareVersion()
+T4CAC 000:405.436 - 0.007ms returns 0x17AE8
+T4CAC 000:405.450 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T4CAC 000:407.502 - 2.059ms returns 0x00
+T4CAC 000:407.907 JLINK_SetSpeed(5000)
+T4CAC 000:408.274 - 0.371ms
+T4CAC 000:408.554 JLINK_SetResetType(JLINKARM_RESET_TYPE_NORMAL)
+T4CAC 000:408.562 - 0.011ms returns JLINKARM_RESET_TYPE_NORMAL
+T4CAC 000:408.570 JLINK_Reset()
+T4CAC 000:411.211   Found SW-DP with ID 0x0BC11477
+T4CAC 000:437.457   Active write protected STM32 device detected.
+This could cause problems during flash download.
+Note: Unsecuring will trigger a mass erase of the internal flash.
+T4CAC 000:437.467   Executing default behavior previously saved in the registry.
+T4CAC 000:437.479   Device will be unsecured now.
+T4CAC 000:521.433   Found SW-DP with ID 0x0BC11477
+T4CAC 000:534.863   Scanning AP map to find all available APs
+T4CAC 000:544.685   AP[1]: Stopped AP scan as end of AP map has been reached
+T4CAC 000:545.279   AP[0]: AHB-AP (IDR: 0x04770031)
+T4CAC 000:545.349   Iterating through AP map to find AHB-AP to use
+T4CAC 000:559.572   AP[0]: Core found
+T4CAC 000:559.648   AP[0]: AHB-AP ROM base: 0xF0000000
+T4CAC 000:564.902   CPUID register: 0x410CC601. Implementer code: 0x41 (ARM)
+T4CAC 000:564.958   Found Cortex-M0 r0p1, Little endian.
+T4CAC 000:665.797   Identified core does not match configuration. (Found: Cortex-M0, Configured: Cortex-M3)
+T4CAC 000:667.772    -- Max. mem block: 0x00010DE8
+T4CAC 000:667.912    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:669.843    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:671.047    -- CPU_ReadMem(4 bytes @ 0xE0002000)
+T4CAC 000:672.171   FPUnit: 4 code (BP) slots and 0 literal slots
+T4CAC 000:672.263    -- CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T4CAC 000:673.356    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T4CAC 000:674.538    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T4CAC 000:675.695    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T4CAC 000:677.034   CoreSight components:
+T4CAC 000:677.133   ROMTbl[0] @ F0000000
+T4CAC 000:677.184    -- CPU_ReadMem(16 bytes @ 0xF0000000)
+T4CAC 000:678.248    -- CPU_ReadMem(16 bytes @ 0xE00FFFF0)
+T4CAC 000:679.200    -- CPU_ReadMem(16 bytes @ 0xE00FFFE0)
+T4CAC 000:681.987   ROMTbl[0][0]: E00FF000, CID: B105100D, PID: 000BB4C0 ROM Table
+T4CAC 000:682.057   ROMTbl[1] @ E00FF000
+T4CAC 000:682.104    -- CPU_ReadMem(16 bytes @ 0xE00FF000)
+T4CAC 000:683.099    -- CPU_ReadMem(16 bytes @ 0xE000EFF0)
+T4CAC 000:684.380    -- CPU_ReadMem(16 bytes @ 0xE000EFE0)
+T4CAC 000:686.407   ROMTbl[1][0]: E000E000, CID: B105E00D, PID: 000BB008 SCS
+T4CAC 000:686.509    -- CPU_ReadMem(16 bytes @ 0xE0001FF0)
+T4CAC 000:687.713    -- CPU_ReadMem(16 bytes @ 0xE0001FE0)
+T4CAC 000:688.840   ROMTbl[1][1]: E0001000, CID: B105E00D, PID: 000BB00A DWT
+T4CAC 000:688.926    -- CPU_ReadMem(16 bytes @ 0xE0002FF0)
+T4CAC 000:690.002    -- CPU_ReadMem(16 bytes @ 0xE0002FE0)
+T4CAC 000:691.034   ROMTbl[1][2]: E0002000, CID: B105E00D, PID: 000BB00B FPB
+T4CAC 000:691.105    -- CPU_ReadMem(16 bytes @ 0xF0000010)
+T4CAC 000:693.182   CPU is running
+T4CAC 000:693.269    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:694.167   CPU is running
+T4CAC 000:694.239    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T4CAC 000:695.129   Reset: Halt core after reset via DEMCR.VC_CORERESET.
+T4CAC 000:696.574   Reset: Reset device via AIRCR.SYSRESETREQ.
+T4CAC 000:696.644   CPU is running
+T4CAC 000:696.690    -- CPU_WriteMem(4 bytes @ 0xE000ED0C)
+T4CAC 000:751.910    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:752.810    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:753.814   CPU is running
+T4CAC 000:753.886    -- CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:754.730   CPU is running
+T4CAC 000:754.799    -- CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T4CAC 000:762.224    -- CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T4CAC 000:769.173    -- CPU_WriteMem(4 bytes @ 0xE0002000)
+T4CAC 000:770.304    -- CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T4CAC 000:771.255    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T4CAC 000:772.224    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T4CAC 000:773.301 - 364.789ms
+T4CAC 000:773.414 JLINK_GetId()
+T4CAC 000:775.364 - 2.008ms   returns 0x0BC11477
+T4CAC 000:789.974 JLINK_GetFirmwareString(...)
+T4CAC 000:790.039 - 0.079ms
+T4CAC 003:842.859 JLINK_Close()
+T4CAC 003:843.539    -- CPU_ReadMem(4 bytes @ 0xE0001000)
+T4CAC 003:844.046    -- CPU_WriteMem(4 bytes @ 0xE0001000)
+T4CAC 003:844.664    -- CPU_WriteMem(4 bytes @ 0xE0001004)
+T4CAC 003:864.811 - 21.979ms
+T4CAC 003:864.846   
+T4CAC 003:864.858   Closed
