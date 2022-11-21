@@ -1,0 +1,121 @@
+in_voltage2_scale
+/sys/bus/iio/devices/iio:device
+iio:device0
+ads1015
+1 -> 气道压力传感器
+2 -> 氧浓度传感器
+iio:device1
+ads1015
+0 -> 笑气压力传感器
+1 -> 氧气压力传感器
+2 -> 氧气比例阀反馈
+3 -> 笑气比例阀反馈
+iio:device2
+ad5627r-1v25
+0 -> 笑气比例阀
+1 -> 氧气比例阀
+iio:device3
+48003000.adc:adc@0
+19 -> 电池电量
+0 -> 风扇卡转
+iio:device4
+48003000.adc:adc@100
+1 -> 电池温度
+
+
+
+
+
+
+
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0048/iio:device0#
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0048/iio:device0#
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0048/iio:device0# cd ..
+root@SunKings:/sys/bus/iio/devices# ls
+iio:device0  iio:device1  iio:device2  iio:device3  iio:device4
+root@SunKings:/sys/bus/iio/devices# cd iio\:device2
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# ls
+dev      out_voltage0_powerdown       out_voltage0_scale           out_voltage1_raw                      power
+name     out_voltage0_powerdown_mode  out_voltage1_powerdown       out_voltage1_scale                    subsystem
+of_node  out_voltage0_raw             out_voltage1_powerdown_mode  out_voltage_powerdown_mode_available  uevent
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cat out_voltage0_scale
+0.305175781
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cat out_voltage0_raw
+0
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo 20 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cat out_voltage0_raw
+20
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# ls
+buffer                                   in_voltage0-voltage3_raw                 in_voltage2_sampling_frequency           power
+current_timestamp_clock                  in_voltage0-voltage3_sampling_frequency  in_voltage2_scale                        sampling_frequency_available
+dev                                      in_voltage0-voltage3_scale               in_voltage2-voltage3_raw                 scale_available
+events                                   in_voltage1_raw                          in_voltage2-voltage3_sampling_frequency  scan_elements
+in_voltage0_raw                          in_voltage1_sampling_frequency           in_voltage2-voltage3_scale               subsystem
+in_voltage0_sampling_frequency           in_voltage1_scale                        in_voltage3_raw                          trigger
+in_voltage0_scale                        in_voltage1-voltage3_raw                 in_voltage3_sampling_frequency           uevent
+in_voltage0-voltage1_raw                 in_voltage1-voltage3_sampling_frequency  in_voltage3_scale
+in_voltage0-voltage1_sampling_frequency  in_voltage1-voltage3_scale               name
+in_voltage0-voltage1_scale               in_voltage2_raw                          of_node
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage2_scale
+0.062500000
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage2_raw
+-1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage2_raw
+-1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# echo  20 > ../iio\:device2/out_voltage0_raw
+-sh: can't create ../iio:device2/out_voltage0_raw: nonexistent directory
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device2/
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1000 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cat out_voltage0_raw
+1000
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage2_raw
+-1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# systemctl stop SunKings-qtdesktop-linuxfb
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# psplash-drm-quit
+Stop psplash: done.
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device2
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1000 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  5000 > out_voltage0_raw
+sh: write error: Invalid argument
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  2000 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1500 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage2_raw
+-1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage3_raw
+15146
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device2
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# ls
+dev      out_voltage0_powerdown       out_voltage0_scale           out_voltage1_raw                      power
+name     out_voltage0_powerdown_mode  out_voltage1_powerdown       out_voltage1_scale                    subsystem
+of_node  out_voltage0_raw             out_voltage1_powerdown_mode  out_voltage_powerdown_mode_available  uevent
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1000 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  0 > out_voltage0_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  2000 > out_voltage1_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1800 > out_voltage1_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# echo  1600 > out_voltage1_raw
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-000f/iio:device2# cd ..
+root@SunKings:/sys/bus/iio/devices# cd iio\:device1
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# ls
+buffer                                   in_voltage0-voltage3_raw                 in_voltage2_sampling_frequency           power
+current_timestamp_clock                  in_voltage0-voltage3_sampling_frequency  in_voltage2_scale                        sampling_frequency_available
+dev                                      in_voltage0-voltage3_scale               in_voltage2-voltage3_raw                 scale_available
+events                                   in_voltage1_raw                          in_voltage2-voltage3_sampling_frequency  scan_elements
+in_voltage0_raw                          in_voltage1_sampling_frequency           in_voltage2-voltage3_scale               subsystem
+in_voltage0_sampling_frequency           in_voltage1_scale                        in_voltage3_raw                          trigger
+in_voltage0_scale                        in_voltage1-voltage3_raw                 in_voltage3_sampling_frequency           uevent
+in_voltage0-voltage1_raw                 in_voltage1-voltage3_sampling_frequency  in_voltage3_scale
+in_voltage0-voltage1_sampling_frequency  in_voltage1-voltage3_scale               name
+in_voltage0-voltage1_scale               in_voltage2_raw                          of_node
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage3_scale
+0.062500000
+root@SunKings:/sys/devices/platform/soc/5c002000.i2c/i2c-3/3-0049/iio:device1# cat in_voltage3_raw
+337

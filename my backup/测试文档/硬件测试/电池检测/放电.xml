@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="GB2312"?>
+<root>
+  <config version="16" type="Step File" client_version="BTS Client 8.0.0.474(2020.12.22)(R3)" date="20220706171421" Guid="2ec2f3a9-0da6-4ad5-b544-b93635c0e0a1">
+    <Head_Info>
+      <Operate Value="66" />
+      <Scale Value="10" />
+      <Start_Step Value="1" Hide_Ctrl_Step="0" />
+      <Creator Value="" />
+      <PN Value="" />
+      <Remark Value="" />
+    </Head_Info>
+    <Whole_Prt>
+      <Record>
+        <Main>
+          <Time Is_Select="1" Value="30000" />
+        </Main>
+      </Record>
+    </Whole_Prt>
+    <Step_Info Num="6">
+      <Step1 Step_ID="1" Step_Type="2">
+        <Limit>
+          <Main>
+            <Curr Is_Select="1" Value="20000" />
+            <Stop_Volt Is_Select="1" Value="90000" />
+          </Main>
+        </Limit>
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step1>
+      <Step2 Step_ID="2" Step_Type="4">
+        <Limit>
+          <Main>
+            <Time Is_Select="1" Value="600000" />
+          </Main>
+        </Limit>
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step2>
+      <Step3 Step_ID="3" Step_Type="2">
+        <Limit>
+          <Main>
+            <Curr Is_Select="1" Value="5000" />
+            <Stop_Volt Is_Select="1" Value="90000" />
+          </Main>
+        </Limit>
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step3>
+      <Step4 Step_ID="4" Step_Type="4">
+        <Limit>
+          <Main>
+            <Time Is_Select="1" Value="600000" />
+          </Main>
+        </Limit>
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step4>
+      <Step5 Step_ID="5" Step_Type="2">
+        <Limit>
+          <Main>
+            <Curr Is_Select="1" Value="1000" />
+            <Stop_Volt Is_Select="1" Value="90000" />
+          </Main>
+        </Limit>
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step5>
+      <Step6 Step_ID="6" Step_Type="6">
+        <AdvancedPrt>
+          <CV_Chg>
+            <CurrRise Count="0" />
+          </CV_Chg>
+          <Safe N2GroupCount="0">
+          </Safe>
+        </AdvancedPrt>
+      </Step6>
+    </Step_Info>
+    <SMBUS>
+      <SMBUS_Path Value="" />
+    </SMBUS>
+  </config>
+</root>
