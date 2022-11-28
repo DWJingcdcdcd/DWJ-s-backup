@@ -112,7 +112,7 @@ int hal_spi_dev_write(hal_spi_bus_id_t bus_id, hal_spi_dev_id_t dev_id, uint8_t 
  * @param  data_len: the data len
  * @return error code.
  */
-int hal_spi_dev_write_without_cs(hal_spi_bus_id_t bus_id, hal_spi_dev_id_t dev_id, uint8_t *data_p, uint16_t data_len);
+int hal_spi_dev_write_without_cs(hal_spi_bus_id_t bus_id, uint8_t *data_p, uint16_t data_len);
 
 /**
  * @brief read data to spi device

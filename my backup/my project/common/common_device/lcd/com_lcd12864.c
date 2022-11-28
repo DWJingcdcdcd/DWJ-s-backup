@@ -36,11 +36,11 @@ int com_lcd_write_cmd(uint8_t cmd)
     uint8_t cmd_array[] = {0xf0 & cmd, cmd << 4};
     
     com_delay_ms(1);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&cmd_key,1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&cmd_key,1);
     com_delay_ms(5);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&cmd_array[0],1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&cmd_array[0],1);
     com_delay_ms(1);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&cmd_array[1],1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&cmd_array[1],1);
     com_delay_ms(1);
     
     return COM_SUCCESS;
@@ -52,11 +52,11 @@ int com_lcd_write_data(uint8_t data)
     uint8_t data_array[] = {0xf0 & data, data << 4};
     
     com_delay_ms(1);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&dat_key,1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&dat_key,1);
     com_delay_ms(5);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&data_array[0],1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&data_array[0],1);
     com_delay_ms(1);
-    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,lcd_dev.spi_dev,&data_array[1],1);
+    hal_spi_dev_write_without_cs(lcd_dev.spi_bus,&data_array[1],1);
     com_delay_ms(1);
     
     return COM_SUCCESS;

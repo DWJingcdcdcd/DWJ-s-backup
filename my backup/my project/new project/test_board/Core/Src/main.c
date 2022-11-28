@@ -55,6 +55,7 @@ hal_spi_bus_id_t hal_spi1;
 hal_spi_bus_id_t hal_spi2;
 hal_spi_dev_id_t lcd_dev;
 hal_spi_dev_id_t tlv5618_dev;
+uint16_t tlv5618_dev_1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,17 +116,18 @@ int main(void)
     hal_spi_dev_creat(hal_spi2,&tlv5618_dev,TLV5618_CS_GPIO_Port,TLV5618_CS_Pin);
     
     com_lcd_creat(hal_spi1,lcd_dev,lcd_cs,lcd_rst);
-    com_tlv5618_creat(hal_spi2,tlv5618_dev);
+    com_tlv5618_init(1);
+    com_tlv5618_creat(&tlv5618_dev_1,hal_spi2,tlv5618_dev);
     //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
     
     com_lcd_init();
     com_lcd_clear_screen();
-    com_lcd_disp_str(0, 0, (uint8_t*)"窗前明月光，");
+    com_lcd_disp_str(0, 0, (uint8_t*)"床前明月光，");
     com_lcd_disp_str(1, 0, (uint8_t*)"疑是地上霜。");
     com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
     com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
   /* USER CODE BEGIN 2 */
-    com_tlv5618_set_voltage(WRITE_DAC_A, 1.834);
+    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.834);
   /* USER CODE END 2 */
     SEGGER_RTT_printf(0,"test dwj 12864 \r\n");
   /* Infinite loop */

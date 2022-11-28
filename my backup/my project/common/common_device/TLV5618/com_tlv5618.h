@@ -17,13 +17,21 @@
 #define WRITE_DAC_A 0xC0 
 #define WRITE_DAC_B 0x40
 
+/** @brief the allocated state of key device */
+typedef enum
+{
+    HAL_tlv5618_STATE_FREE   = 0,            ///< free state
+    HAL_tlv5618_ALLOCATED    = 1,            ///< allocated state
+} com_tlv5618_alloc_state_t;
 
 /** @brief spi bus struct. */
 typedef struct {
+    com_tlv5618_alloc_state_t alloc_state;
     hal_spi_bus_id_t spi_bus;
     hal_spi_dev_id_t spi_dev;
-    hal_do_id_t cs;
 }com_tlv5618_node_t;
+
+int com_tlv5618_init(uint8_t tlv5618_count);
 
 /**
  * @brief creat a tlv5618 device
@@ -32,7 +40,7 @@ typedef struct {
  * @param  cs: the cs gpio id
  * @return error code.
  */
-int com_tlv5618_creat(hal_spi_bus_id_t spi_bus,hal_spi_dev_id_t spi_dev);
+int com_tlv5618_creat(uint16_t *id,hal_spi_bus_id_t spi_bus,hal_spi_dev_id_t spi_dev);
 
 
 /**
@@ -41,9 +49,9 @@ int com_tlv5618_creat(hal_spi_bus_id_t spi_bus,hal_spi_dev_id_t spi_dev);
  * @param  data: the data
  * @return error code.
  */
-int com_tlv5618_write(uint8_t cmd, uint16_t data);
+int com_tlv5618_write(uint16_t id,uint8_t cmd,uint16_t data);
 
-int com_tlv5618_set_voltage(uint8_t cmd, float voltage);
+int com_tlv5618_set_voltage(uint16_t id,uint8_t cmd,float voltage);
 
 #endif //__COM_TLV5618_H__
 

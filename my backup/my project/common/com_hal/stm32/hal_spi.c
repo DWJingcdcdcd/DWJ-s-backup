@@ -141,13 +141,9 @@ int hal_spi_dev_write(hal_spi_bus_id_t bus_id, hal_spi_dev_id_t dev_id, uint8_t 
     return COM_SUCCESS;
 }
 
-int hal_spi_dev_write_without_cs(hal_spi_bus_id_t bus_id, hal_spi_dev_id_t dev_id, uint8_t *data_p, uint16_t data_len)
+int hal_spi_dev_write_without_cs(hal_spi_bus_id_t bus_id, uint8_t *data_p, uint16_t data_len)
 {
     if(bus_id >= hal_spi_bus_node_count){
-        return COM_ERROR_INVALID_STATE;
-    }
-    
-    if(dev_id >= spi_bus_node_p[bus_id].dev_count){
         return COM_ERROR_INVALID_STATE;
     }
     
