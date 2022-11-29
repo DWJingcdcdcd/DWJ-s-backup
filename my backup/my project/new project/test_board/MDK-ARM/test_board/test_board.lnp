@@ -2,6 +2,7 @@
 "test_board\startup_stm32g070xx.o"
 "test_board\main.o"
 "test_board\gpio.o"
+"test_board\dma.o"
 "test_board\spi.o"
 "test_board\usart.o"
 "test_board\stm32g0xx_it.o"

@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -85,31 +86,26 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
 
   /* Configure the system clock */
-    SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-    MX_GPIO_Init();
-    MX_SPI1_Init();
-    MX_SPI2_Init();
-    MX_USART1_UART_Init();
-    MX_USART2_UART_Init();
-    
-  
-    
-    
-    
-    
+  MX_DMA_Init();
+  MX_GPIO_Init();
+  MX_SPI1_Init();
+  MX_SPI2_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
     hal_do_init(5);
     hal_do_creat(&lcd_cs,LCD_CS_GPIO_Port,LCD_CS_Pin,HAL_DO_POLAR_POSITIVE);
@@ -141,12 +137,11 @@ int main(void)
     HAL_UART_Transmit(&huart1, commond, 8, 100);
     com_delay_ms(1);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    //HAL_UART_Transmit_DMA(&huart2, (uint8_t *) "sunking \r\n", 7);
     //SEGGER_RTT_printf(0,"test dwj 12864 \r\n");
     //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
   /* USER CODE END 2 */
-    
-    
-    
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
     while (1)
@@ -240,3 +235,5 @@ size_t get_sys_time_ms(void)
 {
 	return HAL_GetTick();
 }
+
+
