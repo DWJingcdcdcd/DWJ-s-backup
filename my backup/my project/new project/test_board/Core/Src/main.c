@@ -25,6 +25,7 @@
 #include "hal_spi.h"
 #include "com_lcd_dev.h"
 #include "com_tlv5618.h"
+#include "com_delay.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -56,6 +57,8 @@ hal_spi_bus_id_t hal_spi2;
 hal_spi_dev_id_t lcd_dev;
 hal_spi_dev_id_t tlv5618_dev;
 uint16_t tlv5618_dev_1;
+
+uint8_t commond[] = {1,6,0,0,4,87,202,244};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,6 +106,11 @@ int main(void)
     MX_USART2_UART_Init();
     
   
+    
+    
+    
+    
+  /* USER CODE BEGIN 2 */
     hal_do_init(5);
     hal_do_creat(&lcd_cs,LCD_CS_GPIO_Port,LCD_CS_Pin,HAL_DO_POLAR_POSITIVE);
     
@@ -118,7 +126,6 @@ int main(void)
     com_lcd_creat(hal_spi1,lcd_dev,lcd_cs,lcd_rst);
     com_tlv5618_init(1);
     com_tlv5618_creat(&tlv5618_dev_1,hal_spi2,tlv5618_dev);
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
     
     com_lcd_init();
     com_lcd_clear_screen();
@@ -126,10 +133,20 @@ int main(void)
     com_lcd_disp_str(1, 0, (uint8_t*)"疑是地上霜。");
     com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
     com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
-  /* USER CODE BEGIN 2 */
-    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.834);
+  
+    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.725);
+    
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+    com_delay_ms(1);
+    HAL_UART_Transmit(&huart1, commond, 8, 100);
+    com_delay_ms(1);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    //SEGGER_RTT_printf(0,"test dwj 12864 \r\n");
+    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
   /* USER CODE END 2 */
-    SEGGER_RTT_printf(0,"test dwj 12864 \r\n");
+    
+    
+    
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
     while (1)
