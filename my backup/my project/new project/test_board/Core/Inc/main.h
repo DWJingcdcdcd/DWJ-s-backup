@@ -57,6 +57,8 @@ void Error_Handler(void);
 #define LCD_CS_GPIO_Port GPIOB
 #define TLV5618_CS_Pin GPIO_PIN_9
 #define TLV5618_CS_GPIO_Port GPIOB
+#define MDS560R_DIR_Pin GPIO_PIN_7
+#define MDS560R_DIR_GPIO_Port GPIOC
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

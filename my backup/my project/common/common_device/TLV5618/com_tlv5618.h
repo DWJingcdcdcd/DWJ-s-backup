@@ -17,14 +17,14 @@
 #define WRITE_DAC_A 0xC0 
 #define WRITE_DAC_B 0x40
 
-/** @brief the allocated state of key device */
+/** @brief the allocated state of tlv5618 device */
 typedef enum
 {
     HAL_tlv5618_STATE_FREE   = 0,            ///< free state
     HAL_tlv5618_ALLOCATED    = 1,            ///< allocated state
 } com_tlv5618_alloc_state_t;
 
-/** @brief spi bus struct. */
+/** @brief tlv5618_device struct. */
 typedef struct {
     com_tlv5618_alloc_state_t alloc_state;
     hal_spi_bus_id_t spi_bus;
@@ -37,7 +37,6 @@ int com_tlv5618_init(uint8_t tlv5618_count);
  * @brief creat a tlv5618 device
  * @param  spi_bus: the spi bus id
  * @param  spi_dev: the spi device id
- * @param  cs: the cs gpio id
  * @return error code.
  */
 int com_tlv5618_creat(uint16_t *id,hal_spi_bus_id_t spi_bus,hal_spi_dev_id_t spi_dev);

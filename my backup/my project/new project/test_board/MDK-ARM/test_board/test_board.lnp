@@ -37,6 +37,7 @@
 "test_board\com_delay.o"
 "test_board\com_lcd12864.o"
 "test_board\com_tlv5618.o"
+"test_board\com_mds560r.o"
 --strict --scatter "test_board\test_board.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

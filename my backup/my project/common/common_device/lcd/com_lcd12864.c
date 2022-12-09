@@ -66,7 +66,7 @@ int com_lcd_init(void)
 {
     hal_do_output_high(lcd_dev.rs);     ///< Pull up the chip select signal
     
-    com_delay_ms(50);
+    //com_delay_ms(50);
     com_lcd_write_cmd(0x30);
     com_delay_ms(1);
     com_lcd_write_cmd(0x06);

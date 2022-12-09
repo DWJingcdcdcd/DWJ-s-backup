@@ -24,9 +24,11 @@
 #include "gpio.h"
 #include "SEGGER_RTT.h"
 #include "hal_spi.h"
+#include "hal_uart.h"
 #include "com_lcd_dev.h"
 #include "com_tlv5618.h"
 #include "com_delay.h"
+#include "com_mds560r.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -52,14 +54,27 @@
 /* USER CODE BEGIN PV */
 hal_do_id_t lcd_cs;
 hal_do_id_t lcd_rst;
-hal_do_id_t tlv5618_cs;
+hal_do_id_t mds560r_dir;
+
 hal_spi_bus_id_t hal_spi1;
 hal_spi_bus_id_t hal_spi2;
 hal_spi_dev_id_t lcd_dev;
 hal_spi_dev_id_t tlv5618_dev;
 uint16_t tlv5618_dev_1;
+hal_uart_id_t mds560r_dev;
+uint16_t mds560r_dev_1;
+uint8_t uart_rx_buf[64];		//
+uint8_t uart_tx_buf[64];		//
+extern DMA_HandleTypeDef hdma_usart1_rx;
 
-uint8_t commond[] = {1,6,0,0,4,87,202,244};
+uint8_t unlock[] = {1,6,0,0,4,87,202,244};
+uint8_t commond[] = {1,6,0,6,0,0,105,203};
+uint8_t commond2[] = {1,6,0,6,0,1,168,11};
+uint8_t confirm[] = {1,6,0,0,8,174,15,182};
+
+uint8_t read[] = {1,3,0,0,0,1,132,10};
+
+uint8_t response[9] = {1,2,3,4,5,6,7,8,9};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,7 +85,11 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
+{
+    SEGGER_RTT_printf(0, "%s\r\n",data_p);
+    HAL_UART_Transmit(&huart2, data_p, 7, 100);
+}
 /* USER CODE END 0 */
 
 /**
@@ -79,36 +98,37 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+    /* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+    /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+    /* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    HAL_Init();
 
-  /* USER CODE BEGIN Init */
+    /* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+    /* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+    /* Configure the system clock */
+    SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+    /* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+    /* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_DMA_Init();
-  MX_GPIO_Init();
-  MX_SPI1_Init();
-  MX_SPI2_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
-    hal_do_init(5);
+    /* Initialize all configured peripherals */
+    MX_DMA_Init();
+    MX_GPIO_Init();
+    MX_SPI1_Init();
+    MX_SPI2_Init();
+    MX_USART1_UART_Init();
+    MX_USART2_UART_Init();
+    /* USER CODE BEGIN 2 */
+    hal_do_init(2);
     hal_do_creat(&lcd_cs,LCD_CS_GPIO_Port,LCD_CS_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&mds560r_dir,MDS560R_DIR_GPIO_Port,MDS560R_DIR_Pin,HAL_DO_POLAR_POSITIVE);
     
     hal_spi_bus_init(2);
     hal_spi_bus_creat(&hal_spi1,&hspi1);
@@ -123,6 +143,11 @@ int main(void)
     com_tlv5618_init(1);
     com_tlv5618_creat(&tlv5618_dev_1,hal_spi2,tlv5618_dev);
     
+    hal_uart_init(1);
+    hal_uart_creat(&mds560r_dev, &huart1, &hdma_usart1_rx, NULL, uart_cb, uart_rx_buf, 64);
+    com_mds560r_init(1);
+    com_mds560r_creat(&mds560r_dev_1,mds560r_dev);
+    
     com_lcd_init();
     com_lcd_clear_screen();
     com_lcd_disp_str(0, 0, (uint8_t*)"床前明月光，");
@@ -132,13 +157,35 @@ int main(void)
   
     com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.725);
     
+    //com_mds560r_modify_para(mds560r_dev_1, mds560r_dir);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-    com_delay_ms(1);
-    HAL_UART_Transmit(&huart1, commond, 8, 100);
-    com_delay_ms(1);
+    com_delay_ms(10);
+    hal_uart_trans(mds560r_dev, unlock, 8);
+    com_delay_ms(150);
+    hal_uart_trans(mds560r_dev, commond2, 8);
+    com_delay_ms(150);
+    hal_uart_trans(mds560r_dev, confirm, 8);
+    com_delay_ms(10);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    
+    /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+    com_delay_ms(10);
+    //HAL_UART_Transmit_DMA(&huart1, read, 8);
+
+    HAL_UART_Transmit_DMA(&huart1, unlock, 8);
+    com_delay_ms(150);
+    HAL_UART_Transmit_DMA(&huart1, commond, 8);
+    com_delay_ms(150);
+    HAL_UART_Transmit_DMA(&huart1, confirm, 8);
+    com_delay_ms(10);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);*/
+    if(HAL_UART_Receive_DMA(&huart1, response, 8) == 0){
+        //HAL_UART_Transmit(&huart2, response, 8, 100);
+        ;
+    }
+    
     //HAL_UART_Transmit_DMA(&huart2, (uint8_t *) "sunking \r\n", 7);
-    //SEGGER_RTT_printf(0,"test dwj 12864 \r\n");
+    //SEGGER_RTT_printf(0,"test uart2 \r\n");
     //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
@@ -147,7 +194,12 @@ int main(void)
     while (1)
     {
     /* USER CODE END WHILE */
-
+        //HAL_UART_Receive(&huart1, response, 7, 100);
+    
+        //HAL_UART_Transmit(&huart2, response, 7, 100);
+    
+        
+        
     /* USER CODE BEGIN 3 */
     }
   /* USER CODE END 3 */

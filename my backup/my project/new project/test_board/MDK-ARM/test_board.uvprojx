@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32G070xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc; ../Drivers/STM32G0xx_HAL_Driver/Inc; ../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy; ../Drivers/CMSIS/Device/ST/STM32G0xx/Include; ../Drivers/CMSIS/Include; ..\..\..\RTT; ..\..\..\common\com_hal\stm32; ..\..\..\common\com_error; ..\..\..\common\com_delay; ..\..\..\common\common_device; ..\..\..\common\common_device\lcd; ..\..\..\common\common_device\TLV5618</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G0xx/Include;../Drivers/CMSIS/Include;..\..\..\RTT;..\..\..\common\com_hal\stm32;..\..\..\common\com_error;..\..\..\common\com_delay;..\..\..\common\common_device;..\..\..\common\common_device\lcd;..\..\..\common\common_device\TLV5618;..\..\..\common\common_device\MDS560R</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -653,6 +653,11 @@
               <FileName>com_tlv5618.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\common\common_device\TLV5618\com_tlv5618.c</FilePath>
+            </File>
+            <File>
+              <FileName>com_mds560r.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\common\common_device\MDS560R\com_mds560r.c</FilePath>
             </File>
           </Files>
         </Group>
