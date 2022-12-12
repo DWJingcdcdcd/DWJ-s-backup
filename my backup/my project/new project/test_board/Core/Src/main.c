@@ -67,13 +67,6 @@ uint8_t uart_rx_buf[64];		//
 uint8_t uart_tx_buf[64];		//
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
-uint8_t unlock[] = {1,6,0,0,4,87,202,244};
-uint8_t commond[] = {1,6,0,6,0,0,105,203};
-uint8_t commond2[] = {1,6,0,6,0,1,168,11};
-uint8_t confirm[] = {1,6,0,0,8,174,15,182};
-
-uint8_t read[] = {1,3,0,0,0,1,132,10};
-
 uint8_t response[9] = {1,2,3,4,5,6,7,8,9};
 /* USER CODE END PV */
 
@@ -87,7 +80,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
 {
-    SEGGER_RTT_printf(0, "%s\r\n",data_p);
+    SEGGER_RTT_printf(0, "%d\r\n",data_p[5]);
     HAL_UART_Transmit(&huart2, data_p, 7, 100);
 }
 /* USER CODE END 0 */
@@ -146,7 +139,7 @@ int main(void)
     hal_uart_init(1);
     hal_uart_creat(&mds560r_dev, &huart1, &hdma_usart1_rx, NULL, uart_cb, uart_rx_buf, 64);
     com_mds560r_init(1);
-    com_mds560r_creat(&mds560r_dev_1,mds560r_dev);
+    com_mds560r_creat(&mds560r_dev_1,mds560r_dev,mds560r_dir);
     
     com_lcd_init();
     com_lcd_clear_screen();
@@ -157,16 +150,16 @@ int main(void)
   
     com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.725);
     
-    //com_mds560r_modify_para(mds560r_dev_1, mds560r_dir);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+    com_mds560r_read_data(mds560r_dev_1);
+    /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
     com_delay_ms(10);
     hal_uart_trans(mds560r_dev, unlock, 8);
     com_delay_ms(150);
-    hal_uart_trans(mds560r_dev, commond2, 8);
+    hal_uart_trans(mds560r_dev, commond, 8);
     com_delay_ms(150);
     hal_uart_trans(mds560r_dev, confirm, 8);
     com_delay_ms(10);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);*/
     
     /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
     com_delay_ms(10);
@@ -179,10 +172,10 @@ int main(void)
     HAL_UART_Transmit_DMA(&huart1, confirm, 8);
     com_delay_ms(10);
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);*/
-    if(HAL_UART_Receive_DMA(&huart1, response, 8) == 0){
+    //if(HAL_UART_Receive_DMA(&huart1, response, 8) == 0){
         //HAL_UART_Transmit(&huart2, response, 8, 100);
-        ;
-    }
+      //  ;
+   // }
     
     //HAL_UART_Transmit_DMA(&huart2, (uint8_t *) "sunking \r\n", 7);
     //SEGGER_RTT_printf(0,"test uart2 \r\n");

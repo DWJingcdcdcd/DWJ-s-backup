@@ -22,11 +22,23 @@ typedef enum
     HAL_mds560r_ALLOCATED    = 1,            ///< allocated state
 } com_mds560r_alloc_state_t;
 
-/** @brief spi bus struct. */
+/** @brief mds560r device struct. */
 typedef struct {
     com_mds560r_alloc_state_t alloc_state;
     hal_uart_id_t uart_dev;
+    hal_do_id_t dir;
 }com_mds560r_node_t;
+
+/** @brief the unit of Pressure gauge mds560r*/
+typedef enum
+{
+    Unit_kPa = 0,            ///< free state
+    Unit_PSI,            ///< allocated state
+    Unit_MPa,
+    Unit_Kgf,
+    Unit_Bar,
+    Unit_Pa,
+} com_mds560r_unit;
 
 int com_mds560r_init(uint8_t mds560r_count);
 
@@ -37,7 +49,7 @@ int com_mds560r_init(uint8_t mds560r_count);
  * @param  cs: the cs gpio id
  * @return error code.
  */
-int com_mds560r_creat(uint16_t *id,hal_uart_id_t uart_dev);
+int com_mds560r_creat(uint16_t *id,hal_uart_id_t uart_dev,hal_do_id_t dir);
 
 
 /**
@@ -46,9 +58,9 @@ int com_mds560r_creat(uint16_t *id,hal_uart_id_t uart_dev);
 * @param  mds560r_dir: the direction of communication
  * @return error code.
  */
-int com_mds560r_read_data(uint16_t id, uint8_t *cmd, hal_do_id_t mds560r_dir);
+int com_mds560r_read_data(uint16_t id);
 
-int com_mds560r_modify_para(uint16_t id, hal_do_id_t mds560r_dir);
+int com_mds560r_modify_unit(uint16_t id, uint8_t unit);
 
 
 #endif //__COM_MDS560R_H__
