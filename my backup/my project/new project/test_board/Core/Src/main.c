@@ -25,6 +25,8 @@
 #include "SEGGER_RTT.h"
 #include "hal_spi.h"
 #include "hal_uart.h"
+#include "hal_key.h"
+#include "hal_base.h"
 #include "com_lcd_dev.h"
 #include "com_tlv5618.h"
 #include "com_delay.h"
@@ -56,6 +58,11 @@ hal_do_id_t lcd_cs;
 hal_do_id_t lcd_rst;
 hal_do_id_t mds560r_dir;
 
+hal_key_id_t key_1;     ///< key 1
+hal_key_id_t key_2;     ///< key 2
+hal_key_id_t key_3;     ///< key 3
+hal_key_id_t key_4;     ///< key 4
+
 hal_spi_bus_id_t hal_spi1;
 hal_spi_bus_id_t hal_spi2;
 hal_spi_dev_id_t lcd_dev;
@@ -78,6 +85,95 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
+{
+    // if key push, turn on beep 30ms
+    switch(msg_type){
+        case HAL_KEY_MSG_PUSH:
+            SEGGER_RTT_printf(0, "Some key have been push!\r\n");
+            break;
+        default:
+            break;
+    }
+    
+    if(key_id == key_1){
+        switch(msg_type){
+            case HAL_KEY_MSG_PUSH:
+                SEGGER_RTT_printf(0, "key_1 push!\r\n");
+                break;
+            case HAL_KEY_MSG_LONG_PUSH:
+                SEGGER_RTT_printf(0, "key_1 long push!\r\n");
+                break;
+            case HAL_KEY_MSG_REP_PUSH:
+                SEGGER_RTT_printf(0, "key_1 rep push!\r\n");
+                break;
+            case HAL_KEY_MSG_UP:
+                SEGGER_RTT_printf(0, "key_1 up!\r\n");
+                break;
+            default:
+                break;
+        }
+    }
+    
+    if(key_id == key_2){
+        switch(msg_type){
+            case HAL_KEY_MSG_PUSH:
+                SEGGER_RTT_printf(0, "key_2 push!\r\n");
+                break;
+            case HAL_KEY_MSG_LONG_PUSH:
+                SEGGER_RTT_printf(0, "key_2 long push!\r\n");
+                break;
+            case HAL_KEY_MSG_REP_PUSH:
+                SEGGER_RTT_printf(0, "key_2 rep push!\r\n");
+                break;
+            case HAL_KEY_MSG_UP:
+                SEGGER_RTT_printf(0, "key_2 up!\r\n");
+                break;
+            default:
+                break;
+        }
+    }
+    
+    if(key_id == key_3){
+        switch(msg_type){
+            case HAL_KEY_MSG_PUSH:
+                SEGGER_RTT_printf(0, "key_3 push!\r\n");
+                break;
+            case HAL_KEY_MSG_LONG_PUSH:
+                SEGGER_RTT_printf(0, "key_3 long push!\r\n");
+                break;
+            case HAL_KEY_MSG_REP_PUSH:
+                SEGGER_RTT_printf(0, "key_3 rep push!\r\n");
+                break;
+            case HAL_KEY_MSG_UP:
+                SEGGER_RTT_printf(0, "key_3 up!\r\n");
+                break;
+            default:
+                break;
+        }
+    }
+    
+    if(key_id == key_4){
+        switch(msg_type){
+            case HAL_KEY_MSG_PUSH:
+                SEGGER_RTT_printf(0, "key_4 push!\r\n");
+                break;
+            case HAL_KEY_MSG_LONG_PUSH:
+                SEGGER_RTT_printf(0, "key_4 long push!\r\n");
+                break;
+            case HAL_KEY_MSG_REP_PUSH:
+                SEGGER_RTT_printf(0, "key_4 rep push!\r\n");
+                break;
+            case HAL_KEY_MSG_UP:
+                SEGGER_RTT_printf(0, "key_4 up!\r\n");
+                break;
+            default:
+                break;
+        }
+    }
+    
+}
+
 void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
 {
     SEGGER_RTT_printf(0, "%d\r\n",data_p[5]);
@@ -119,9 +215,17 @@ int main(void)
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
     /* USER CODE BEGIN 2 */
+    hal_base_init();
+       
     hal_do_init(2);
     hal_do_creat(&lcd_cs,LCD_CS_GPIO_Port,LCD_CS_Pin,HAL_DO_POLAR_POSITIVE);
     hal_do_creat(&mds560r_dir,MDS560R_DIR_GPIO_Port,MDS560R_DIR_Pin,HAL_DO_POLAR_POSITIVE);
+    
+    hal_key_init(4);
+    hal_key_creat(&key_1,KEY_1_GPIO_Port,KEY_1_Pin,HAL_KEY_POLAR_POSITIVE,&key_cb);
+    hal_key_creat(&key_2,KEY_2_GPIO_Port,KEY_2_Pin,HAL_KEY_POLAR_POSITIVE,&key_cb);
+    hal_key_creat(&key_3,KEY_3_GPIO_Port,KEY_3_Pin,HAL_KEY_POLAR_POSITIVE,&key_cb);
+    hal_key_creat(&key_4,KEY_4_GPIO_Port,KEY_4_Pin,HAL_KEY_POLAR_POSITIVE,&key_cb);
     
     hal_spi_bus_init(2);
     hal_spi_bus_creat(&hal_spi1,&hspi1);
@@ -186,13 +290,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
     while (1)
     {
-    /* USER CODE END WHILE */
-        //HAL_UART_Receive(&huart1, response, 7, 100);
-    
-        //HAL_UART_Transmit(&huart2, response, 7, 100);
-    
-        
-        
+        hal_key_poll();
+        hal_base_timer_timeout();
+    /* USER CODE END WHILE */       
     /* USER CODE BEGIN 3 */
     }
   /* USER CODE END 3 */

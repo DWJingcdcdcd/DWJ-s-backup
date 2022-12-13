@@ -34,6 +34,7 @@
 "test_board\hal_base.o"
 "test_board\hal_spi.o"
 "test_board\hal_uart.o"
+"test_board\hal_key.o"
 "test_board\com_delay.o"
 "test_board\com_lcd12864.o"
 "test_board\com_tlv5618.o"
