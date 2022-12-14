@@ -57,6 +57,11 @@
 hal_do_id_t lcd_cs;
 hal_do_id_t lcd_rst;
 hal_do_id_t mds560r_dir;
+hal_do_id_t test_led;
+hal_do_id_t led1;
+hal_do_id_t led2;
+hal_do_id_t led3;
+hal_do_id_t led4;
 
 hal_key_id_t key_1;     ///< key 1
 hal_key_id_t key_2;     ///< key 2
@@ -188,7 +193,7 @@ void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
 int main(void)
 {
     /* USER CODE BEGIN 1 */
-
+    uint16_t i = 0;
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -217,9 +222,14 @@ int main(void)
     /* USER CODE BEGIN 2 */
     hal_base_init();
        
-    hal_do_init(2);
+    hal_do_init(7);
     hal_do_creat(&lcd_cs,LCD_CS_GPIO_Port,LCD_CS_Pin,HAL_DO_POLAR_POSITIVE);
     hal_do_creat(&mds560r_dir,MDS560R_DIR_GPIO_Port,MDS560R_DIR_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&test_led,TEST_LED_GPIO_Port,TEST_LED_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&led1,LED1_GPIO_Port,LED1_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&led2,LED2_GPIO_Port,LED2_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&led3,LED3_GPIO_Port,LED3_Pin,HAL_DO_POLAR_POSITIVE);
+    hal_do_creat(&led4,LED4_GPIO_Port,LED4_Pin,HAL_DO_POLAR_POSITIVE);
     
     hal_key_init(4);
     hal_key_creat(&key_1,KEY_1_GPIO_Port,KEY_1_Pin,HAL_KEY_POLAR_POSITIVE,&key_cb);
@@ -255,6 +265,9 @@ int main(void)
     com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 1.725);
     
     com_mds560r_read_data(mds560r_dev_1);
+    
+    hal_do_output_high(led1);
+    hal_do_output_high(led3);
     /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
     com_delay_ms(10);
     hal_uart_trans(mds560r_dev, unlock, 8);
@@ -292,6 +305,14 @@ int main(void)
     {
         hal_key_poll();
         hal_base_timer_timeout();
+        i++;
+        if(i == 20000){
+            hal_do_output_high(test_led);
+        }
+        if(i >= 40000){
+            hal_do_output_low(test_led);
+            i = 0;
+        }
     /* USER CODE END WHILE */       
     /* USER CODE BEGIN 3 */
     }
