@@ -31,6 +31,11 @@ typedef struct {
     hal_spi_dev_id_t spi_dev;
 }com_tlv5618_node_t;
 
+/**
+ * @brief initial the tlv5618 devices
+ * @param  tlv5618_count: the count of tlv5618 devices
+ * @return error code.
+ */
 int com_tlv5618_init(uint8_t tlv5618_count);
 
 /**
@@ -44,12 +49,20 @@ int com_tlv5618_creat(uint16_t *id,hal_spi_bus_id_t spi_bus,hal_spi_dev_id_t spi
 
 /**
  * @brief write to tlv5618 
+ * @param  id: the tlv5618 device id
  * @param  cmd: the command
  * @param  data: the data
  * @return error code.
  */
 int com_tlv5618_write(uint16_t id,uint8_t cmd,uint16_t data);
 
+/**
+ * @brief set tlv5618's output voltage  
+ * @param  id: the tlv5618 device id
+ * @param  cmd: the command
+ * @param  voltage: the settting voltage
+ * @return error code.
+ */
 int com_tlv5618_set_voltage(uint16_t id,uint8_t cmd,float voltage);
 
 #endif //__COM_TLV5618_H__

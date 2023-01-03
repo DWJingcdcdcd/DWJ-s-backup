@@ -29,24 +29,18 @@ typedef struct {
     hal_do_id_t dir;
 }com_mds560r_node_t;
 
-/** @brief the unit of Pressure gauge mds560r*/
-typedef enum
-{
-    Unit_kPa = 0,            ///< free state
-    Unit_PSI,            ///< allocated state
-    Unit_MPa,
-    Unit_Kgf,
-    Unit_Bar,
-    Unit_Pa,
-} com_mds560r_unit;
-
+/**
+ * @brief initial the mds560r devices
+ * @param  mds560r_count: the count of mds560r devices
+ * @return error code.
+ */
 int com_mds560r_init(uint8_t mds560r_count);
 
 /**
- * @brief creat a tlv5618 device
- * @param  spi_bus: the spi bus id
- * @param  spi_dev: the spi device id
- * @param  cs: the cs gpio id
+ * @brief creat a mds560r device
+ * @param  id: mds560r device id
+ * @param  uart_dev: uart device id
+ * @param  dir: the direction of communication
  * @return error code.
  */
 int com_mds560r_creat(uint16_t *id,hal_uart_id_t uart_dev,hal_do_id_t dir);
@@ -54,13 +48,12 @@ int com_mds560r_creat(uint16_t *id,hal_uart_id_t uart_dev,hal_do_id_t dir);
 
 /**
  * @brief read data from mds560r 
- * @param  cmd: the command
-* @param  mds560r_dir: the direction of communication
+ * @param  id: mds560r device id
  * @return error code.
  */
 int com_mds560r_read_data(uint16_t id);
 
-int com_mds560r_modify_unit(uint16_t id, uint8_t unit);
+
 
 
 #endif //__COM_MDS560R_H__
