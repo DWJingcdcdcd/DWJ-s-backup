@@ -77,6 +77,7 @@ hal_uart_id_t mds560r_dev;
 uint16_t mds560r_dev_1;
 uint8_t uart_rx_buf[64];		//
 uint8_t uart_tx_buf[64];		//
+uint8_t pressure_gauge_message[10];
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
 uint8_t response[9] = {1,2,3,4,5,6,7,8,9};
@@ -91,8 +92,8 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 struct _pid {
-	float SetSpeed;            //定义设定值
-	float ActualSpeed;        //定义实际值
+	float SetPressure;            //定义设定值
+	float ActualPressure;        //定义实际值
 	float err;                //定义偏差值
 	float err_last;            //定义上一个偏差值
 	float Kp, Ki, Kd;          //定义比例、积分、微分系数
@@ -102,8 +103,8 @@ struct _pid {
 
 void PID_init() {
 	SEGGER_RTT_printf(0,"PID_init begin \n");
-	pid.SetSpeed = 0.0;
-	pid.ActualSpeed = 0.0;
+	pid.SetPressure = 0.0;
+	pid.ActualPressure = 0.0;
 	pid.err = 0.0;
 	pid.err_last = 0.0;
 	pid.voltage = 0.0;
@@ -114,14 +115,14 @@ void PID_init() {
 	SEGGER_RTT_printf(0,"PID_init end \n");
 }
 
-float PID_realize(float speed) {
-	pid.SetSpeed = speed;
-	pid.err = pid.SetSpeed - pid.ActualSpeed;
+float PID_realize(float pressure) {
+	pid.SetPressure = pressure;
+	pid.err = pid.SetPressure - pid.ActualPressure;
 	pid.integral += pid.err;
 	pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
 	pid.err_last = pid.err;
-	pid.ActualSpeed = pid.voltage * 1.0;
-	return pid.ActualSpeed;
+	pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+	return pid.ActualPressure;
 }
 
 void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
@@ -215,8 +216,12 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
 
 void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
 {
-    SEGGER_RTT_printf(0, "%d\r\n",data_p[5]);
-    HAL_UART_Transmit(&huart2, data_p, 7, 100);
+    //SEGGER_RTT_printf(0, "%d\r\n",data_p[5]);
+    for(int a = 0; a < 7; a ++){
+        pressure_gauge_message[a] = data_p[a];
+    }
+    HAL_UART_Transmit(&huart2, pressure_gauge_message, 7, 100);
+    
 }
 /* USER CODE END 0 */
 
@@ -228,6 +233,8 @@ int main(void)
 {
     /* USER CODE BEGIN 1 */
     uint16_t i = 0;
+    uint16_t j = 0;
+    uint16_t pressure_value;
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -297,47 +304,13 @@ int main(void)
     com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
     com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
   
-    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 2);
-    /*uint16_t data = (int)(2048 / 1.22 * 1.234 + 0.5);
-    uint8_t two_byte[] = {(0xc0 | (data >> 8)), (data & 0x00ff)};
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&hspi2, two_byte, 2, 100);
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
-    //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&hspi2, two_byte, 2, 100);*/
+    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 0.64);
     
-    com_mds560r_read_data(mds560r_dev_1);
+    //com_mds560r_read_data(mds560r_dev_1);
     
-    hal_do_output_high(led1);
-    hal_do_output_high(led3);
-    /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-    com_delay_ms(10);
-    hal_uart_trans(mds560r_dev, unlock, 8);
-    com_delay_ms(150);
-    hal_uart_trans(mds560r_dev, commond, 8);
-    com_delay_ms(150);
-    hal_uart_trans(mds560r_dev, confirm, 8);
-    com_delay_ms(10);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);*/
+    //hal_do_output_high(led1);
+    //hal_do_output_high(led3);
     
-    /*HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
-    com_delay_ms(10);
-    //HAL_UART_Transmit_DMA(&huart1, read, 8);
-
-    HAL_UART_Transmit_DMA(&huart1, unlock, 8);
-    com_delay_ms(150);
-    HAL_UART_Transmit_DMA(&huart1, commond, 8);
-    com_delay_ms(150);
-    HAL_UART_Transmit_DMA(&huart1, confirm, 8);
-    com_delay_ms(10);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);*/
-    //if(HAL_UART_Receive_DMA(&huart1, response, 8) == 0){
-        //HAL_UART_Transmit(&huart2, response, 8, 100);
-      //  ;
-   // }
-    
-    //HAL_UART_Transmit_DMA(&huart2, (uint8_t *) "sunking \r\n", 7);
-    //SEGGER_RTT_printf(0,"test uart2 \r\n");
     //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
@@ -355,6 +328,22 @@ int main(void)
             hal_do_output_low(test_led);
             i = 0;
         }
+        com_mds560r_read_data(mds560r_dev_1);
+        while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
+            j ++;
+            if(j >= 1000){
+                break;
+            }                
+        }
+        if(j >= 1000){
+            SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
+        }
+        else{
+            ;
+        }
+        j = 0;
+        
+                
     /* USER CODE END WHILE */       
     /* USER CODE BEGIN 3 */
     }
