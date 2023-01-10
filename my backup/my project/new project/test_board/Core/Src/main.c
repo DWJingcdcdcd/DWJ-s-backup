@@ -77,7 +77,7 @@ hal_uart_id_t mds560r_dev;
 uint16_t mds560r_dev_1;
 uint8_t uart_rx_buf[64];		//
 uint8_t uart_tx_buf[64];		//
-uint8_t pressure_gauge_message[10];
+uint8_t pressure_gauge_message[10] = {0,1,2,3,4,5,6,7,8,9};
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
 uint8_t response[9] = {1,2,3,4,5,6,7,8,9};
@@ -127,6 +127,9 @@ float PID_realize(float pressure) {
 
 void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
 {
+    uint16_t j = 0;
+    uint16_t k = 0;
+    uint16_t l = 0;
     // if key push, turn on beep 30ms
     switch(msg_type){
         case HAL_KEY_MSG_PUSH:
@@ -140,6 +143,30 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
         switch(msg_type){
             case HAL_KEY_MSG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 push!\r\n");
+                for(l = 0; l < 1000; l ++){
+                    com_mds560r_read_data(mds560r_dev_1);
+                    while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
+                        j ++;
+                        if(j >= 10000){
+                            break;
+                        }                
+                    }
+                    if(j >= 10000){
+                        SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
+                    }
+                    else{
+                        //for(k = 0; k < 7; k ++){
+                            //SEGGER_RTT_printf(0, "%d\r\n",pressure_gauge_message[k]);
+                            //pressure_gauge_message[k] = 0;
+                        //}
+                        PID_realize(1);
+                        com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                        for(k = 0; k < 7; k ++){
+                            pressure_gauge_message[k] = 0;
+                        }
+            
+                    }
+                }   
                 break;
             case HAL_KEY_MSG_LONG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 long push!\r\n");
@@ -233,8 +260,7 @@ int main(void)
 {
     /* USER CODE BEGIN 1 */
     uint16_t i = 0;
-    uint16_t j = 0;
-    uint16_t pressure_value;
+    
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -306,7 +332,7 @@ int main(void)
   
     com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 0.64);
     
-    //com_mds560r_read_data(mds560r_dev_1);
+    com_mds560r_read_data(mds560r_dev_1);
     
     //hal_do_output_high(led1);
     //hal_do_output_high(led3);
@@ -328,20 +354,7 @@ int main(void)
             hal_do_output_low(test_led);
             i = 0;
         }
-        com_mds560r_read_data(mds560r_dev_1);
-        while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
-            j ++;
-            if(j >= 1000){
-                break;
-            }                
-        }
-        if(j >= 1000){
-            SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
-        }
-        else{
-            ;
-        }
-        j = 0;
+        
         
                 
     /* USER CODE END WHILE */       
