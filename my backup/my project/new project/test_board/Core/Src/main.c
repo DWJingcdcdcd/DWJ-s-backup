@@ -153,6 +153,10 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
                     }
                     if(j >= 10000){
                         SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
+                        for(k = 0; k < 7; k ++){
+                            SEGGER_RTT_printf(0, "%d\r\n",pressure_gauge_message[k]);
+                            pressure_gauge_message[k] = 0;
+                        }
                     }
                     else{
                         //for(k = 0; k < 7; k ++){
@@ -161,11 +165,14 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
                         //}
                         PID_realize(1);
                         com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                        SEGGER_RTT_printf(0, "%d\r\n", (int)(pid.voltage * 1000));
                         for(k = 0; k < 7; k ++){
-                            pressure_gauge_message[k] = 0;
+                            pressure_gauge_message[k] = k;
                         }
             
                     }
+                    j = 0;
+                    com_delay_ms(15);
                 }   
                 break;
             case HAL_KEY_MSG_LONG_PUSH:
@@ -247,7 +254,7 @@ void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
     for(int a = 0; a < 7; a ++){
         pressure_gauge_message[a] = data_p[a];
     }
-    HAL_UART_Transmit(&huart2, pressure_gauge_message, 7, 100);
+    //HAL_UART_Transmit(&huart2, pressure_gauge_message, 7, 100);
     
 }
 /* USER CODE END 0 */
@@ -287,7 +294,7 @@ int main(void)
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
     /* USER CODE BEGIN 2 */
-    
+    PID_init();
     hal_base_init();
        
     hal_do_init(7);
