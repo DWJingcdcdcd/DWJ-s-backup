@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dma.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 #include "SEGGER_RTT.h"
@@ -29,8 +30,8 @@
 #include "hal_base.h"
 #include "com_lcd_dev.h"
 #include "com_tlv5618.h"
-#include "com_delay.h"
 #include "com_mds560r.h"
+#include "com_delay.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -81,6 +82,7 @@ uint8_t pressure_gauge_message[10] = {0,1,2,3,4,5,6,7,8,9};
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
 uint8_t key_1_push = 0;
+uint8_t n = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -239,39 +241,41 @@ void uart_cb(uint16_t uart_dev_id, uint8_t *data_p, uint16_t len)
   */
 int main(void)
 {
-    /* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
     uint16_t i = 0;
     uint16_t j = 0;
     uint16_t k = 0;
     uint16_t l = 0;
     uint8_t m = 0;
     
-    /* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-    /* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-    HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-    /* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-    /* USER CODE END Init */
+  /* USER CODE END Init */
 
-    /* Configure the system clock */
-    SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-    /* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-    /* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-    /* Initialize all configured peripherals */
-    MX_DMA_Init();
-    MX_GPIO_Init();
-    MX_SPI1_Init();
-    MX_SPI2_Init();
-    MX_USART1_UART_Init();
-    MX_USART2_UART_Init();
-    /* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_DMA_Init();
+  MX_GPIO_Init();
+  MX_SPI1_Init();
+  MX_SPI2_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_TIM1_Init();
+  /* USER CODE BEGIN 2 */
+    HAL_TIM_Base_Start_IT(&htim1);
     PID_init();
     hal_base_init();
        
@@ -404,7 +408,8 @@ int main(void)
         }
         
                 
-    /* USER CODE END WHILE */       
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
     }
   /* USER CODE END 3 */
@@ -454,7 +459,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    //static uint8_t n = 0;
+    
+    if(n >= 4){
+        n = 0;
+        hal_do_output_reverse(led1);
+    }
+    n++;
+}
 /* USER CODE END 4 */
 
 /**
@@ -492,5 +506,3 @@ size_t get_sys_time_ms(void)
 {
 	return HAL_GetTick();
 }
-
-
