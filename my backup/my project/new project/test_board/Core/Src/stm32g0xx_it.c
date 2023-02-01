@@ -21,9 +21,10 @@
 #include "main.h"
 #include "stm32g0xx_it.h"
 
-#include "hal_uart.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "hal_uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

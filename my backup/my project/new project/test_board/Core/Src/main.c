@@ -23,6 +23,10 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "SEGGER_RTT.h"
 #include "hal_spi.h"
 #include "hal_uart.h"
@@ -32,10 +36,6 @@
 #include "com_tlv5618.h"
 #include "com_mds560r.h"
 #include "com_delay.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,6 +82,7 @@ uint8_t pressure_gauge_message[10] = {0,1,2,3,4,5,6,7,8,9};
 extern DMA_HandleTypeDef hdma_usart1_rx;
 
 uint8_t key_1_push = 0;
+uint8_t TIM_Flag = 0;
 uint8_t n = 0;
 /* USER CODE END PV */
 
@@ -111,9 +112,9 @@ void PID_init() {
 	pid.err_last = 0.0;
 	pid.voltage = 0.0;
 	pid.integral = 0.0;
-	pid.Kp = 0.5;
+	pid.Kp = 0.6;
 	pid.Ki = 0.001;
-	pid.Kd = 1.0;
+	pid.Kd = 0.2;
 	SEGGER_RTT_printf(0,"PID_init end \n");
 }
 
@@ -121,14 +122,8 @@ float PID_realize(float pressure) {
 	pid.SetPressure = pressure;
 	pid.err = pid.SetPressure - pid.ActualPressure;
 	pid.integral += pid.err;
-	pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
-    if(pid.voltage < 0.58){
-        pid.Ki = 0.001;
-    }
-    else{
-        pid.Ki = 0.0001;
-    }
-        
+	//pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
+    pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral;
 	pid.err_last = pid.err;
 	pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
 	return pid.ActualPressure;
@@ -150,6 +145,7 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
             case HAL_KEY_MSG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 push!\r\n"); 
                 key_1_push = 1;
+                TIM_Flag = 1;
                 break;
             case HAL_KEY_MSG_LONG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 long push!\r\n");
@@ -243,10 +239,6 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
     uint16_t i = 0;
-    uint16_t j = 0;
-    uint16_t k = 0;
-    uint16_t l = 0;
-    uint8_t m = 0;
     
   /* USER CODE END 1 */
 
@@ -319,7 +311,7 @@ int main(void)
     com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
     com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
   
-    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 0.6);
+    //com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 0.6);
     
     com_mds560r_read_data(mds560r_dev_1);
     
@@ -342,72 +334,7 @@ int main(void)
         if(i >= 20000){
             hal_do_output_low(test_led);
             i = 0;
-        }
-        /*com_mds560r_read_data(mds560r_dev_1);
-        while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
-            j ++;
-            if(j >= 10000){
-                break;
-            }                
-        }
-        SEGGER_RTT_printf(0, "Pressure:%d\r\n", (((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4])); 
-        j = 0;
-        com_delay_ms(15);*/
-        
-        if(key_1_push == 1){
-            l ++;
-            if(l >= 1000){               
-                l = 0;
-                //m ++;
-                //if(m >= 10){
-                    com_mds560r_read_data(mds560r_dev_1);
-                    while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
-                        j ++;
-                        if(j >= 10000){
-                            break;
-                        }                
-                    }
-                    if(j >= 10000){
-                        SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
-                        for(k = 0; k < 7; k ++){
-                            SEGGER_RTT_printf(0, "%d\r\n",pressure_gauge_message[k]);
-                            pressure_gauge_message[k] = 0;
-                        }
-                    }
-                    else{
-                         PID_realize(1);
-                         com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
-                         //SEGGER_RTT_printf(0, "Vol:%d\r\n", (int)(pid.voltage * 100000));
-                        if(pid.voltage >= 0){
-                            SEGGER_RTT_printf(0, "Vol:%d", (int)pid.voltage);
-                            SEGGER_RTT_printf(0, ".");
-                            SEGGER_RTT_printf(0, "%d\r\n", (int)(pid.voltage * 100000) % 100000);
-                        }
-                        else{
-                            SEGGER_RTT_printf(0, "Vol:-%d", abs((int)pid.voltage));
-                            SEGGER_RTT_printf(0, ".");
-                            SEGGER_RTT_printf(0, "%d\r\n", abs((int)(pid.voltage * 100000) % 100000));
-                        }
-                         
-                         //SEGGER_RTT_printf(0, "Pressure:%d\r\n", (int)(pid.ActualPressure * 100000));
-                         SEGGER_RTT_printf(0, "Pressure:%d", (int)pid.ActualPressure);
-                         SEGGER_RTT_printf(0, ".");
-                         SEGGER_RTT_printf(0, "%d\r\n", (int)(pid.ActualPressure * 1000) % 100000);
-                         for(k = 0; k < 7; k ++){
-                             pressure_gauge_message[k] = k;
-                         }
-            
-                    }
-                    j = 0;
-                    m = 0;
-                    com_delay_ms(15);
-                //}
-                
-            }
-            
-        }
-        
-                
+        }             
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -461,13 +388,40 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    //static uint8_t n = 0;
-    
-    if(n >= 4){
-        n = 0;
-        hal_do_output_reverse(led1);
+    if(TIM_Flag == 1){
+        n++;
+        if(n >= 10){
+            n = 0;
+            uint16_t j = 0;
+            uint8_t k = 0;
+            com_mds560r_read_data(mds560r_dev_1);
+            while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
+                j ++;
+                if(j >= 1000){
+                    break;
+                }                
+            }
+            if(j >= 1000){
+                SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
+                for(k = 0; k < 7; k ++){
+                    SEGGER_RTT_printf(0, "%d\r\n",pressure_gauge_message[k]);
+                    pressure_gauge_message[k] = 0;
+                }
+            }
+            else{
+                PID_realize(1);
+                com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                SEGGER_RTT_printf(0, "Pressure:%f\r\n", pid.ActualPressure);
+                SEGGER_RTT_printf(0, "Vol:%f\r\n", pid.voltage);
+                 
+
+                for(k = 0; k < 7; k ++){
+                    pressure_gauge_message[k] = k;
+                }
+
+            }
+        }     
     }
-    n++;
 }
 /* USER CODE END 4 */
 
