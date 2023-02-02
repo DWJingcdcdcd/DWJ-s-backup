@@ -112,9 +112,9 @@ void PID_init() {
 	pid.err_last = 0.0;
 	pid.voltage = 0.0;
 	pid.integral = 0.0;
-	pid.Kp = 0.6;
-	pid.Ki = 0.001;
-	pid.Kd = 0.2;
+	pid.Kp = 0.64;
+	pid.Ki = 0.0;
+	pid.Kd = 0.0;
 	SEGGER_RTT_printf(0,"PID_init end \n");
 }
 
@@ -122,8 +122,7 @@ float PID_realize(float pressure) {
 	pid.SetPressure = pressure;
 	pid.err = pid.SetPressure - pid.ActualPressure;
 	pid.integral += pid.err;
-	//pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
-    pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral;
+	pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
 	pid.err_last = pid.err;
 	pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
 	return pid.ActualPressure;
@@ -390,7 +389,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(TIM_Flag == 1){
         n++;
-        if(n >= 10){
+        if(n >= 15){
             n = 0;
             uint16_t j = 0;
             uint8_t k = 0;
