@@ -112,7 +112,7 @@ void PID_init() {
 	pid.err_last = 0.0;
 	pid.voltage = 0.0;
 	pid.integral = 0.0;
-	pid.Kp = 0.64;
+	pid.Kp = 0.32;
 	pid.Ki = 0.0;
 	pid.Kd = 0.0;
 	SEGGER_RTT_printf(0,"PID_init end \n");
@@ -120,11 +120,12 @@ void PID_init() {
 
 float PID_realize(float pressure) {
 	pid.SetPressure = pressure;
+    pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
 	pid.err = pid.SetPressure - pid.ActualPressure;
 	pid.integral += pid.err;
 	pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
 	pid.err_last = pid.err;
-	pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+	//pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
 	return pid.ActualPressure;
 }
 
@@ -408,8 +409,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 }
             }
             else{
-                PID_realize(1);
+                PID_realize(2);
                 com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                
                 SEGGER_RTT_printf(0, "Pressure:%f\r\n", pid.ActualPressure);
                 SEGGER_RTT_printf(0, "Vol:%f\r\n", pid.voltage);
                  
