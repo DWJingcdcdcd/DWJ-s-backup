@@ -112,7 +112,7 @@ void PID_init() {
 	pid.err_last = 0.0;
 	pid.voltage = 0.0;
 	pid.integral = 0.0;
-	pid.Kp = 0.32;
+	pid.Kp = 0.3;
 	pid.Ki = 0.0;
 	pid.Kd = 0.0;
 	SEGGER_RTT_printf(0,"PID_init end \n");
@@ -146,6 +146,8 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
                 SEGGER_RTT_printf(0, "key_1 push!\r\n"); 
                 key_1_push = 1;
                 TIM_Flag = 1;
+                com_lcd_clear_screen();
+                com_lcd_disp_str(0, 0, (uint8_t*)"开始测试...");
                 break;
             case HAL_KEY_MSG_LONG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 long push!\r\n");
@@ -306,10 +308,10 @@ int main(void)
     
     com_lcd_init();
     com_lcd_clear_screen();
-    com_lcd_disp_str(0, 0, (uint8_t*)"床前明月光，");
-    com_lcd_disp_str(1, 0, (uint8_t*)"疑是地上霜。");
-    com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
-    com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
+    com_lcd_disp_str(0, 0, (uint8_t*)"请点击右上方按键进行测试！");
+    //com_lcd_disp_str(1, 0, (uint8_t*)"疑是地上霜。");
+    //com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
+    //com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
   
     //com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, 0.6);
     
@@ -389,6 +391,7 @@ void SystemClock_Config(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(TIM_Flag == 1){
+        
         n++;
         if(n >= 15){
             n = 0;
@@ -409,7 +412,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 }
             }
             else{
-                PID_realize(2);
+                PID_realize(1);
                 com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
                 
                 SEGGER_RTT_printf(0, "Pressure:%f\r\n", pid.ActualPressure);
