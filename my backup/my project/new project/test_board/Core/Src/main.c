@@ -27,6 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "math.h"
 #include "SEGGER_RTT.h"
 #include "hal_spi.h"
 #include "hal_uart.h"
@@ -84,6 +85,12 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 uint8_t key_1_push = 0;
 uint8_t TIM_Flag = 0;
 uint8_t n = 0;
+float pressure_array[5] = {0};
+float SetPressure = 0.5;
+#define PID_INIT 0.0
+#define PID_KP 0
+#define PID_KI 0
+#define PID_KD 0
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,26 +113,27 @@ struct _pid {
 
 void PID_init() {
 	SEGGER_RTT_printf(0,"PID_init begin \n");
-	pid.SetPressure = 0.0;
-	pid.ActualPressure = 0.0;
-	pid.err = 0.0;
-	pid.err_last = 0.0;
-	pid.voltage = 0.0;
-	pid.integral = 0.0;
-	pid.Kp = 0.3;
-	pid.Ki = 0.0;
-	pid.Kd = 0.0;
+	pid.SetPressure = PID_INIT;
+	pid.ActualPressure = PID_INIT;
+	pid.err = PID_INIT;
+	pid.err_last = PID_INIT;
+	pid.voltage = PID_INIT;
+	pid.integral = PID_INIT;
+	pid.Kp = PID_KP;
+	pid.Ki = PID_KI;
+	pid.Kd = PID_KD;
 	SEGGER_RTT_printf(0,"PID_init end \n");
 }
 
 float PID_realize(float pressure) {
 	pid.SetPressure = pressure;
-    pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+    
 	pid.err = pid.SetPressure - pid.ActualPressure;
 	pid.integral += pid.err;
 	pid.voltage = pid.Kp * pid.err + pid.Ki * pid.integral + pid.Kd * (pid.err - pid.err_last);
 	pid.err_last = pid.err;
 	//pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+    
 	return pid.ActualPressure;
 }
 
@@ -412,7 +420,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 }
             }
             else{
-                PID_realize(1);
+                pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+                for(int l = 4; l > 0; l--){
+                    pressure_array[l] = pressure_array[l - 1];
+                }
+                pressure_array[0] = pid.ActualPressure;
+                if((fabs(pressure_array[0] - SetPressure) <= 0.02) && (fabs(pressure_array[1] - SetPressure) <= 0.02) && (fabs(pressure_array[2] - SetPressure) <= 0.02) 
+                && (fabs(pressure_array[3] - SetPressure) <= 0.02) && (fabs(pressure_array[4] - SetPressure) <= 0.02)){
+                    SetPressure += 0.5;
+                }
+                PID_realize(SetPressure);
                 com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
                 
                 SEGGER_RTT_printf(0, "Pressure:%f\r\n", pid.ActualPressure);
