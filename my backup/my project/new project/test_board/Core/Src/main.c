@@ -84,13 +84,29 @@ extern DMA_HandleTypeDef hdma_usart1_rx;
 
 uint8_t key_1_push = 0;
 uint8_t TIM_Flag = 0;
+uint8_t TRIG_Flag = 0;
 uint8_t n = 0;
-float pressure_array[5] = {0};
-float SetPressure = 0.5;
+float pres_arry[5] = {0};
+float ExpPres = 0.5;
+float TrigPres = 0.0;
 #define PID_INIT 0.0
-#define PID_KP 0
-#define PID_KI 0
-#define PID_KD 0
+#define PID_KP 0.0
+#define PID_KI 0.0
+#define PID_KD 0.0
+enum arry_index{
+    INDEX_0 = 0,
+    INDEX_1,
+    INDEX_2,
+    INDEX_3,
+    INDEX_4,
+};
+enum flag{
+    FLAG_0 = 0,
+    FLAG_1,
+};
+
+#define PRES_ERR 0.02
+#define STEP 0.02
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -152,8 +168,8 @@ void key_cb(hal_key_id_t key_id, hal_key_msg_type msg_type)
         switch(msg_type){
             case HAL_KEY_MSG_PUSH:
                 SEGGER_RTT_printf(0, "key_1 push!\r\n"); 
-                key_1_push = 1;
-                TIM_Flag = 1;
+                key_1_push = FLAG_1;
+                TIM_Flag = FLAG_1;
                 com_lcd_clear_screen();
                 com_lcd_disp_str(0, 0, (uint8_t*)"开始测试...");
                 break;
@@ -316,7 +332,7 @@ int main(void)
     
     com_lcd_init();
     com_lcd_clear_screen();
-    com_lcd_disp_str(0, 0, (uint8_t*)"请点击右上方按键进行测试！");
+    com_lcd_disp_str(0, 0, (uint8_t*)"请点击右上方按键进行测试!");
     //com_lcd_disp_str(1, 0, (uint8_t*)"疑是地上霜。");
     //com_lcd_disp_str(2, 0, (uint8_t*)"举头望明月，");
     //com_lcd_disp_str(3, 0, (uint8_t*)"低头思故乡。");
@@ -344,7 +360,9 @@ int main(void)
         if(i >= 20000){
             hal_do_output_low(test_led);
             i = 0;
-        }             
+        }          
+
+                
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -398,8 +416,7 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if(TIM_Flag == 1){
-        
+    if(TIM_Flag == FLAG_1){     
         n++;
         if(n >= 15){
             n = 0;
@@ -421,17 +438,27 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             }
             else{
                 pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
-                for(int l = 4; l > 0; l--){
-                    pressure_array[l] = pressure_array[l - 1];
+                for(int ii = 4; ii > 0; ii--){
+                    pres_arry[ii] = pres_arry[ii - 1];
                 }
-                pressure_array[0] = pid.ActualPressure;
-                if((fabs(pressure_array[0] - SetPressure) <= 0.02) && (fabs(pressure_array[1] - SetPressure) <= 0.02) && (fabs(pressure_array[2] - SetPressure) <= 0.02) 
-                && (fabs(pressure_array[3] - SetPressure) <= 0.02) && (fabs(pressure_array[4] - SetPressure) <= 0.02)){
-                    SetPressure += 0.5;
+                pres_arry[INDEX_0] = pid.ActualPressure;
+                if((fabs(pres_arry[INDEX_0] - ExpPres) <= PRES_ERR) && (fabs(pres_arry[INDEX_1] - ExpPres) <= PRES_ERR) && (fabs(pres_arry[INDEX_2] - ExpPres) <= PRES_ERR) 
+                && (fabs(pres_arry[INDEX_3] - ExpPres) <= PRES_ERR) && (fabs(pres_arry[INDEX_4] - ExpPres) <= PRES_ERR)){
+                    ExpPres += STEP;
                 }
-                PID_realize(SetPressure);
-                com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
-                
+                if((pres_arry[INDEX_0] < pres_arry[INDEX_1]) && (pres_arry[INDEX_1] < pres_arry[INDEX_2]) && 
+                (pres_arry[INDEX_2] < pres_arry[INDEX_3]) && (pres_arry[INDEX_3] < pres_arry[INDEX_4])){
+                    TrigPres = ExpPres;
+                    com_lcd_disp_str(0, 0, (uint8_t*)"此处需要显示TrigPres的值");
+                    pid.voltage = PID_INIT;
+                    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                    TIM_Flag = FLAG_0;
+                    TRIG_Flag = FLAG_1;
+                }
+                else{
+                    PID_realize(ExpPres);
+                    com_tlv5618_set_voltage(tlv5618_dev_1, WRITE_DAC_A, pid.voltage);
+                }  
                 SEGGER_RTT_printf(0, "Pressure:%f\r\n", pid.ActualPressure);
                 SEGGER_RTT_printf(0, "Vol:%f\r\n", pid.voltage);
                  
@@ -442,6 +469,39 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
             }
         }     
+    }
+    if(TRIG_Flag == FLAG_1){
+        uint16_t jj = 0;
+        uint8_t kk = 0;
+        n++;
+        if(n >= 15){
+            n = 0;
+            com_mds560r_read_data(mds560r_dev_1);
+            while((pressure_gauge_message[0] != 1) || (pressure_gauge_message[1] != 3)){
+                jj ++;
+                if(jj >= 1000){
+                    break;
+                }                
+            }
+            if(jj >= 1000){
+                SEGGER_RTT_printf(0, "pressure gauge error!\r\n");
+                for(kk = 0; kk < 7; kk ++){
+                    SEGGER_RTT_printf(0, "%d\r\n",pressure_gauge_message[kk]);
+                    pressure_gauge_message[kk] = 0;
+                }
+            }
+            else{
+                pid.ActualPressure = (float)(((uint16_t)pressure_gauge_message[3] << 8) + pressure_gauge_message[4]) / 100;
+                for(int ii = 4; ii > 0; ii--){
+                    pres_arry[ii] = pres_arry[ii - 1];
+                }
+                pres_arry[INDEX_0] = pid.ActualPressure;
+                if((fabs(pres_arry[INDEX_0] - pres_arry[INDEX_1]) <= PRES_ERR) && (fabs(pres_arry[INDEX_0] - pres_arry[INDEX_2]) <= PRES_ERR) && (fabs(pres_arry[INDEX_0] - pres_arry[INDEX_3]) <= PRES_ERR) 
+                && (fabs(pres_arry[INDEX_0] - pres_arry[INDEX_4]) <= PRES_ERR)){
+                    com_lcd_disp_str(0, 0, (uint8_t*)"此处需要显示pres_arry[INDEX_0]的值");
+                }
+            }
+        }  
     }
 }
 /* USER CODE END 4 */
